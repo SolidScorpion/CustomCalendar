@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="column_header_height">60dp</dimen>
+    <dimen name="row_height">60dp</dimen>
+    <dimen name="cell_height">@dimen/row_height</dimen>
+    <dimen name="cell_width">50dp</dimen>
+    <dimen name="textSize">16sp</dimen>
+    <dimen name="header_width">110dp</dimen>
+    <dimen name="room_header_size">12sp</dimen>
+    <dimen name="room_category_size">10sp</dimen>
+    <dimen name="small_text_size">12sp</dimen>
+    <dimen name="day_size">24sp</dimen>
+</resources>
