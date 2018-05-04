@@ -22,6 +22,7 @@ class BookingInfo : View {
     private val startTriangle: Path = Path()
     private val endTriangle: Path = Path()
     private val display: DisplayMetrics = context.resources.displayMetrics
+    private val heightOffset = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1f, display)
     var bookingClickListener: OnBookingClickListener? = null
     private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
         it.color = Color.GREEN
@@ -36,14 +37,6 @@ class BookingInfo : View {
 
     private val calendar = Calendar.getInstance()
 
-    private val textPaint: TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).also {
-        it.color = Color.WHITE
-        it.textAlign = Paint.Align.CENTER
-    }
-    private val rect: RectF = RectF()
-
-    private val measureRect = Rect()
-    private val sampleText = "Booked Number"
     var calendarDay: CalendarDay? = null
         set(value) {
             field = value
@@ -130,29 +123,24 @@ class BookingInfo : View {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        rect.left = w * widthPart * 16
-        rect.top = 0f
-        rect.right = w.toFloat()
-        rect.bottom = h.toFloat()
-        textPaint.getTextBounds(sampleText, 0, sampleText.length, measureRect)
         initStartTriangle()
         initEndTriangle()
     }
 
     private fun initEndTriangle() {
-        endTriangle.moveTo(width * 0.9f, 0f)
-        endTriangle.lineTo(0f, 0f)
-        endTriangle.lineTo(0f, height.toFloat())
-        endTriangle.lineTo(width * 0.9f, 0f)
+        endTriangle.moveTo(width * 0.9f, height * 0.1f)
+        endTriangle.lineTo(0f, height * 0.1f)
+        endTriangle.lineTo(0f, height * 0.90f)
+        endTriangle.lineTo(width * 0.9f, height * 0.1f)
         endTriangle.computeBounds(endBounds, true)
         endRegion.setPath(endTriangle, Region(endBounds.left.toInt(), endBounds.top.toInt(), endBounds.right.toInt(), endBounds.bottom.toInt()))
     }
 
     private fun initStartTriangle() {
-        startTriangle.moveTo(width.toFloat(), 0f)
-        startTriangle.lineTo(width.toFloat(), height.toFloat())
-        startTriangle.lineTo(width * 0.1f, height.toFloat())
-        startTriangle.lineTo(width.toFloat(), 0f)
+        startTriangle.moveTo(width.toFloat(), height * 0.1f)
+        startTriangle.lineTo(width.toFloat(), height * 0.9f)
+        startTriangle.lineTo(width * 0.1f, height * 0.9f)
+        startTriangle.lineTo(width.toFloat(), height * 0.1f)
         startTriangle.computeBounds(startBounds, true)
         startRegion.setPath(startTriangle, Region(startBounds.left.toInt(), startBounds.top.toInt(), startBounds.right.toInt(), startBounds.bottom.toInt()))
     }
@@ -175,7 +163,7 @@ class BookingInfo : View {
             canvas.drawPath(endTriangle, paint)
         }
         if (shouldFill) {
-            canvas.drawColor(Color.GREEN)
+            canvas.drawRect(0f, height * 0.1f, width.toFloat(), height * 0.9f, paint)
         }
     }
 
