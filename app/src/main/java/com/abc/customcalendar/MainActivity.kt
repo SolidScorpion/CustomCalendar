@@ -29,8 +29,6 @@ class MainActivity : AppCompatActivity() {
         val startBookTime = instance.time
         instance.add(Calendar.DAY_OF_MONTH, 2)
         instance.set(Calendar.HOUR_OF_DAY, 15)
-        tableView.isShowVerticalSeparators = false
-        tableView.isShowHorizontalSeparators = false
         val bookOrder = BookOrder(startBookTime, instance.time)
         instance.time = startTime
         val arrayList = ArrayList<Room>()
@@ -39,27 +37,27 @@ class MainActivity : AppCompatActivity() {
         tableView.isIgnoreSelectionColors = true
         tableView.tableViewListener = object: ITableViewListener {
             override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-                Toast.makeText(this@MainActivity,"onCellLongPressed column $column row $row", Toast.LENGTH_SHORT).show()
+                showToast("onCellLongPressed column $column row $row")
             }
 
             override fun onColumnHeaderLongPressed(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
-                Toast.makeText(this@MainActivity,"onColumnHeaderLongPressed column $column ", Toast.LENGTH_SHORT).show()
+                showToast("onColumnHeaderLongPressed column $column ")
             }
 
             override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-                Toast.makeText(this@MainActivity,"onRowHeaderClicked column row $row", Toast.LENGTH_SHORT).show()
+                showToast("onRowHeaderClicked column row $row")
             }
 
             override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
-                Toast.makeText(this@MainActivity,"onColumnHeaderClicked column $column ", Toast.LENGTH_SHORT).show()
+                showToast("onColumnHeaderClicked column $column ")
             }
 
             override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-                Toast.makeText(this@MainActivity,"onCellClicked column $column row $row", Toast.LENGTH_SHORT).show()
+                showToast("onCellClicked column $column row $row")
             }
 
             override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-                Toast.makeText(this@MainActivity,"onRowHeaderLongPressed column row $row", Toast.LENGTH_SHORT).show()
+                showToast("onRowHeaderLongPressed column row $row")
             }
 
         }
@@ -83,5 +81,9 @@ class MainActivity : AppCompatActivity() {
             arrayList2.add(newList)
         }
         tableView.adapter.setAllItems(arrayList3, arrayList, arrayList2)
+    }
+
+    private fun showToast(text:String) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 }
