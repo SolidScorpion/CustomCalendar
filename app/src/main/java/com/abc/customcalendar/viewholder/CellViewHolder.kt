@@ -9,7 +9,10 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 /**
  * Created by Anton P. on 27.04.2018.
  */
-class CellViewHolder(itemView: View) : AbstractViewHolder(itemView) {
+class CellViewHolder(itemView: View, bookingClickListener: BookingInfo.OnBookingClickListener) : AbstractViewHolder(itemView) {
     val cellRoot : FrameLayout = itemView.findViewById(R.id.roomCellRoot)
     val bookingInfo: BookingInfo = itemView.findViewById(R.id.bookingInfo)
+    init {
+        bookingInfo.bookingClickListener = bookingClickListener
+    }
 }

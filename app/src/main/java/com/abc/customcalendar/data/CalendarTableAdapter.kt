@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.abc.customcalendar.BookingInfo
 import com.abc.customcalendar.R
 import com.abc.customcalendar.pojo.CalendarDay
 import com.abc.customcalendar.pojo.Room
@@ -19,7 +20,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 /**
  * Created by Anton P. on 27.04.2018.
  */
-class CalendarTableAdapter(c: Context) : AbstractTableAdapter<CalendarDay, Room, RoomCell>(c) {
+class CalendarTableAdapter(c: Context, val bookingListener: BookingInfo.OnBookingClickListener) : AbstractTableAdapter<CalendarDay, Room, RoomCell>(c) {
     private var inflater = LayoutInflater.from(c)
     private fun inflate(layoutRes: Int, parent: ViewGroup? = null): View {
         return inflater.inflate(layoutRes, parent, false)
@@ -34,7 +35,7 @@ class CalendarTableAdapter(c: Context) : AbstractTableAdapter<CalendarDay, Room,
     }
 
     override fun onCreateCellViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
-        return CellViewHolder(inflate(R.layout.item_room_cell, parent))
+        return CellViewHolder(inflate(R.layout.item_room_cell, parent), bookingListener)
     }
 
     override fun onCreateCornerView(): View = inflate(R.layout.item_corner)

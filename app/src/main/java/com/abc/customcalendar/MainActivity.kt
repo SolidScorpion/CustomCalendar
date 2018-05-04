@@ -16,26 +16,37 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), BookingInfo.OnBookingClickListener {
+    override fun onBookingClicked() {
+        showToast("Booking clicked")
+    }
+
+    override fun onEmptyBookingClicked() {
+        showToast("Empty place clicked")
+    }
+
     private val headerDateFormat = SimpleDateFormat("MMM dd EE")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val tableView = findViewById<TableView>(R.id.contentContainer)
-        tableView.adapter = CalendarTableAdapter(this)
+        tableView.adapter = CalendarTableAdapter(this, this)
         val instance = Calendar.getInstance()
         val startTime = instance.time
         instance.set(Calendar.HOUR_OF_DAY, 13)
         val startBookTime = instance.time
         instance.add(Calendar.DAY_OF_MONTH, 2)
         instance.set(Calendar.HOUR_OF_DAY, 15)
-        val bookOrder = BookOrder(startBookTime, instance.time)
+        val firsBookIngEnd = instance.time
+        val bookOrder = BookOrder(startBookTime, firsBookIngEnd)
+        instance.add(Calendar.DAY_OF_MONTH, 1)
+        val secondBookOrder = BookOrder(firsBookIngEnd, instance.time)
         instance.time = startTime
         val arrayList = ArrayList<Room>()
         val arrayList2 = ArrayList<List<RoomCell>>()
         val arrayList3 = ArrayList<CalendarDay>()
         tableView.isIgnoreSelectionColors = true
-        tableView.tableViewListener = object: ITableViewListener {
+        tableView.tableViewListener = object : ITableViewListener {
             override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
                 showToast("onCellLongPressed column $column row $row")
             }
@@ -74,7 +85,9 @@ class MainActivity : AppCompatActivity() {
             val newList = ArrayList<RoomCell>()
             for (k in 0..29) {
                 val roomCell =
-                        if (i == 0 && (k == 0 || k == 1 || k == 2)) RoomCell(false, bookOrder)
+                        if (i == 0 && (k == 0 || k == 1 )) RoomCell(false, arrayOf(bookOrder))
+                        else if (i == 0 && k == 2) RoomCell(false, arrayOf(bookOrder, secondBookOrder))
+                        else if (i == 0 && k == 3) RoomCell(false, arrayOf(secondBookOrder))
                         else RoomCell(false)
                 newList.add(roomCell)
             }
@@ -83,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         tableView.adapter.setAllItems(arrayList3, arrayList, arrayList2)
     }
 
-    private fun showToast(text:String) {
+    private fun showToast(text: String) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 }
