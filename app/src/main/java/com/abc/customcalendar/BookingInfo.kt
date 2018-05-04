@@ -6,7 +6,6 @@ import android.support.v4.view.GestureDetectorCompat
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.Log
 import android.util.TypedValue
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -41,35 +40,81 @@ class BookingInfo : View {
         it.color = Color.WHITE
         it.textAlign = Paint.Align.CENTER
     }
-    private val borderPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
-        it.color = Color.WHITE
-        it.style = Paint.Style.STROKE
-        it.strokeWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2f, display)
-    }
     private val rect: RectF = RectF()
 
     private val measureRect = Rect()
     private val sampleText = "Booked Number"
     var calendarDay: CalendarDay? = null
         set(value) {
-            calendar.time = value?.date
             field = value
+            calendar.time = value?.date
         }
     private val gestureDetectorCompat: GestureDetectorCompat = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
         override fun onDown(e: MotionEvent): Boolean {
-            if (region.contains(e.x.toInt(), e.y.toInt())) {
+            return if (shouldFill) {
                 bookingClickListener?.onBookingClicked()
+                true
             } else {
-                bookingClickListener?.onEmptyBookingClicked()
+                val x = e.x.toInt()
+                val y = e.y.toInt()
+                if (shouldDrawStart && startRegion.contains(x, y)) {
+                    bookingClickListener?.onBookingClicked()
+                } else if (shouldDrawEnd && endRegion.contains(x, y)) {
+                    bookingClickListener?.onBookingClicked()
+                } else {
+                    bookingClickListener?.onEmptyBookingClicked()
+                }
+                true
             }
-            return true
         }
     })
+    private var shouldDrawEnd = false
+    private var shouldDrawStart = false
+    private var shouldFill = false
 
 
     var roomCell: RoomCell? = null
+    private val endBounds: RectF = RectF()
+    private val endRegion: Region = Region()
     private val startBounds: RectF = RectF()
-    private val region: Region = Region()
+    private val startRegion: Region = Region()
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (roomCell?.bookTime != null) {
+            calendar.time = calendarDay?.date
+            val cellDay = calendar.get(Calendar.DAY_OF_MONTH)
+            val cellMonth = calendar.get(Calendar.MONTH)
+            val startDate = roomCell?.bookTime?.get(0)?.startDate
+            val endDate = roomCell?.bookTime?.get(0)?.endDate
+            calendar.time = startDate
+            val startDay = calendar.get(Calendar.DAY_OF_MONTH)
+            val startMonth = calendar.get(Calendar.MONTH)
+            calendar.time = endDate
+            val endDay = calendar.get(Calendar.DAY_OF_MONTH)
+            val endMonth = calendar.get(Calendar.MONTH)
+            if (cellMonth == startMonth && cellDay == startDay) {
+                shouldDrawStart = true
+            } else if (cellMonth == endMonth && cellDay <= endDay) {
+                if (endDay == cellDay) {
+                    shouldDrawEnd = true
+                } else {
+                    shouldFill = true
+                }
+            }
+            if (roomCell?.bookTime?.size!! > 1) {
+                shouldDrawStart = true
+            }
+            invalidate()
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        shouldDrawEnd = false
+        shouldDrawStart = false
+        shouldFill = false
+    }
 
     constructor(c: Context) : super(c) {
         init(c)
@@ -99,7 +144,8 @@ class BookingInfo : View {
         endTriangle.lineTo(0f, 0f)
         endTriangle.lineTo(0f, height.toFloat())
         endTriangle.lineTo(width * 0.9f, 0f)
-
+        endTriangle.computeBounds(endBounds, true)
+        endRegion.setPath(endTriangle, Region(endBounds.left.toInt(), endBounds.top.toInt(), endBounds.right.toInt(), endBounds.bottom.toInt()))
     }
 
     private fun initStartTriangle() {
@@ -108,7 +154,7 @@ class BookingInfo : View {
         startTriangle.lineTo(width * 0.1f, height.toFloat())
         startTriangle.lineTo(width.toFloat(), 0f)
         startTriangle.computeBounds(startBounds, true)
-        region.setPath(startTriangle, Region(startBounds.left.toInt(), startBounds.top.toInt(), startBounds.right.toInt(), startBounds.bottom.toInt()))
+        startRegion.setPath(startTriangle, Region(startBounds.left.toInt(), startBounds.top.toInt(), startBounds.right.toInt(), startBounds.bottom.toInt()))
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -122,31 +168,14 @@ class BookingInfo : View {
     }
 
     private fun drawChip(canvas: Canvas) {
-        if (roomCell?.bookTime != null) {
-            calendar.time = calendarDay?.date
-            val cellDay = calendar.get(Calendar.DAY_OF_MONTH)
-            val cellMonth = calendar.get(Calendar.MONTH)
-            canvas.save()
-            val startDate = roomCell?.bookTime?.get(0)?.startDate
-            val endDate = roomCell?.bookTime?.get(0)?.endDate
-            calendar.time = startDate
-            val startDay = calendar.get(Calendar.DAY_OF_MONTH)
-            val startMonth = calendar.get(Calendar.MONTH)
-            calendar.time = endDate
-            val endDay = calendar.get(Calendar.DAY_OF_MONTH)
-            val endMonth = calendar.get(Calendar.MONTH)
-            if (cellMonth == startMonth && cellDay == startDay) {
-                canvas.drawPath(startTriangle, paint)//draw start
-            } else if (cellMonth == endMonth && cellDay <= endDay) {
-                if (endDay == cellDay) {
-                    canvas.drawPath(endTriangle, paint)
-                } else {
-                    canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
-                }
-            }
-            if (roomCell?.bookTime?.size!! > 1) {
-                canvas.drawPath(startTriangle, paint)
-            }
+        if (shouldDrawStart) {
+            canvas.drawPath(startTriangle, paint)
+        }
+        if (shouldDrawEnd) {
+            canvas.drawPath(endTriangle, paint)
+        }
+        if (shouldFill) {
+            canvas.drawColor(Color.GREEN)
         }
     }
 

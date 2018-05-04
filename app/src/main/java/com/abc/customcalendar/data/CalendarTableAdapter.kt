@@ -46,8 +46,8 @@ class CalendarTableAdapter(c: Context, val bookingListener: BookingInfo.OnBookin
             val item = getColumnHeaderItem(columnPosition)
             val context = it.cellRoot.context
             holder.cellRoot.setBackgroundColor(ContextCompat.getColor(context, if (item.isHoliday) R.color.holiday else R.color.usualDay))
-            holder.bookingInfo.roomCell = cellItemModel as RoomCell
             holder.bookingInfo.calendarDay = item
+            holder.bookingInfo.roomCell = cellItemModel as RoomCell
         }
     }
 
