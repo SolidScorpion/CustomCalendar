@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), BookingInfo.OnBookingClickListener, Da
         showToast("Empty place clicked")
     }
 
-    private val headerDateFormat = SimpleDateFormat("MMM dd EE")
+    private val headerDateFormat = SimpleDateFormat("yyyy MMM dd EE")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity(), BookingInfo.OnBookingClickListener, Da
             val dayOFWeek = calendarInstance.get(Calendar.DAY_OF_WEEK)
             val split = headerDateFormat.format(calendarInstance.time).split(" ")
             arrayList3.add(CalendarDay(split[0], split[1],
-                    split[2], dayOFWeek == Calendar.SATURDAY || dayOFWeek == Calendar.SUNDAY,
+                    split[2], split[3], dayOFWeek == Calendar.SATURDAY || dayOFWeek == Calendar.SUNDAY,
                     calendarInstance.time))
             val newList = ArrayList<RoomCell>()
             for (k in 0..differenceInDays.toInt()) {

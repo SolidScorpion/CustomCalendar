@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.abc.customcalendar.BookingInfo
 import com.abc.customcalendar.R
 import com.abc.customcalendar.pojo.CalendarDay
@@ -23,6 +24,7 @@ import com.abc.customcalendar.viewholder.RoomHeaderViewHolder
 class CalendarTableAdapter(c: Context, private val bookingListener: BookingInfo.OnBookingClickListener,
                            private val timeListener: View.OnClickListener) : AbstractTableAdapter<CalendarDay, Room, RoomCell>(c) {
     private var inflater = LayoutInflater.from(c)
+    private lateinit var cornerTextView: TextView
     private fun inflate(layoutRes: Int, parent: ViewGroup? = null): View {
         return inflater.inflate(layoutRes, parent, false)
     }
@@ -39,7 +41,10 @@ class CalendarTableAdapter(c: Context, private val bookingListener: BookingInfo.
         return CellViewHolder(inflate(R.layout.item_room_cell, parent), bookingListener)
     }
 
-    override fun onCreateCornerView(): View = inflate(R.layout.item_corner).also { it.setOnClickListener(timeListener) }
+    override fun onCreateCornerView(): View = inflate(R.layout.item_corner).also {
+        it.setOnClickListener(timeListener)
+        cornerTextView = it.findViewById(R.id.dateView)
+    }
 
     override fun onBindCellViewHolder(holder: AbstractViewHolder, cellItemModel: Any, columnPosition: Int, rowPosition: Int) {
         val cellViewHolder = holder as? CellViewHolder
@@ -58,6 +63,7 @@ class CalendarTableAdapter(c: Context, private val bookingListener: BookingInfo.
             holder.monthNameTv.text = columnHeaderItemModel.month
             holder.weekDay.text = columnHeaderItemModel.weekDay
             val context = holder.weekDay.context
+            cornerTextView.text = columnHeaderItemModel.year
             holder.itemView.setBackgroundColor(ContextCompat.getColor(context, if (columnHeaderItemModel.isHoliday) R.color.holiday else R.color.usualDay))
         }
     }
