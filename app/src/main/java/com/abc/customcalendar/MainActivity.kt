@@ -96,9 +96,9 @@ class MainActivity : AppCompatActivity(), BookingInfo.OnBookingClickListener, Da
             }
         }
         val (bookOrder, secondBookOrder) = initStubBooking()
-        val arrayList = ArrayList<Room>()
-        val arrayList2 = ArrayList<List<RoomCell>>()
-        val arrayList3 = ArrayList<CalendarDay>()
+        val rowHeaderList = ArrayList<Room>()
+        val roomCellList = ArrayList<List<RoomCell>>()
+        val headersList = ArrayList<CalendarDay>()
         tableView.isIgnoreSelectionColors = true
         calendarInstance.time = offsetTime
         val startTimeInMillis = calendarInstance.timeInMillis
@@ -112,16 +112,9 @@ class MainActivity : AppCompatActivity(), BookingInfo.OnBookingClickListener, Da
         val currentTime = calendarInstance.timeInMillis
         val currentDayIndex = TimeUnit.DAYS.convert(currentTime - offsetStartInMillis, TimeUnit.MILLISECONDS)
         Log.d(TAG, "Time difference in days: $differenceInDays")
-        for (i in 0..differenceInDays.toInt()) {
+        for (i in 0..13) {
             val roomNumber = i + 1
-            arrayList.add(Room("Room $roomNumber", i.toString()))
-            calendarInstance.time = offsetTime
-            calendarInstance.add(Calendar.DAY_OF_MONTH, i)
-            val dayOFWeek = calendarInstance.get(Calendar.DAY_OF_WEEK)
-            val split = headerDateFormat.format(calendarInstance.time).split(" ")
-            arrayList3.add(CalendarDay(split[0], split[1],
-                    split[2], split[3], dayOFWeek == Calendar.SATURDAY || dayOFWeek == Calendar.SUNDAY,
-                    calendarInstance.time))
+            rowHeaderList.add(Room("Room $roomNumber", i.toString()))
             val newList = ArrayList<RoomCell>()
             for (k in 0..differenceInDays.toInt()) {
                 val roomCell =
@@ -131,9 +124,18 @@ class MainActivity : AppCompatActivity(), BookingInfo.OnBookingClickListener, Da
                         else RoomCell(false)
                 newList.add(roomCell)
             }
-            arrayList2.add(newList)
+            roomCellList.add(newList)
         }
-        tableView.adapter.setAllItems(arrayList3, arrayList, arrayList2)
+        for (i in 0..differenceInDays.toInt()) {
+            calendarInstance.time = offsetTime
+            calendarInstance.add(Calendar.DAY_OF_MONTH, i)
+            val dayOFWeek = calendarInstance.get(Calendar.DAY_OF_WEEK)
+            val split = headerDateFormat.format(calendarInstance.time).split(" ")
+            headersList.add(CalendarDay(split[0], split[1],
+                    split[2], split[3], dayOFWeek == Calendar.SATURDAY || dayOFWeek == Calendar.SUNDAY,
+                    calendarInstance.time))
+        }
+        tableView.adapter.setAllItems(headersList, rowHeaderList, roomCellList)
         tableView.scrollToColumnPosition(currentDayIndex.toInt())
     }
 
