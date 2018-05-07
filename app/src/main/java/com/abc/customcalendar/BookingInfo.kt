@@ -3,10 +3,7 @@ package com.abc.customcalendar
 import android.content.Context
 import android.graphics.*
 import android.support.v4.view.GestureDetectorCompat
-import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -18,21 +15,21 @@ import java.util.*
  * Created by Anton P. on 30.04.2018.
  */
 class BookingInfo : View {
-    private val widthPart = 1 / 24f
     private val startTriangle: Path = Path()
     private val endTriangle: Path = Path()
-    private val display: DisplayMetrics = context.resources.displayMetrics
-    private val heightOffset = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1f, display)
+    private val offsetEnd = 0.9f
+    private val offsetStart = 0.1f
+    private val shaderGroupOnline = BitmapShader(BitmapFactory.decodeResource(resources,
+            R.drawable.texture_group_online),
+            Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+    private val shaderGroupOffline: BitmapShader = BitmapShader(BitmapFactory.decodeResource(resources,
+            R.drawable.texture_group_offline),
+            Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
     var bookingClickListener: OnBookingClickListener? = null
     private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
         it.color = Color.GREEN
         it.style = Paint.Style.FILL
-    }
-
-    private val cellPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
-        it.color = Color.WHITE
-        it.style = Paint.Style.STROKE
-        it.strokeWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1f, display)
+        it.shader = shaderGroupOnline
     }
 
     private val calendar = Calendar.getInstance()
@@ -42,25 +39,26 @@ class BookingInfo : View {
             field = value
             calendar.time = value?.date
         }
-    private val gestureDetectorCompat: GestureDetectorCompat = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onDown(e: MotionEvent): Boolean {
-            return if (shouldFill) {
-                bookingClickListener?.onBookingClicked()
-                true
-            } else {
-                val x = e.x.toInt()
-                val y = e.y.toInt()
-                if (shouldDrawStart && startRegion.contains(x, y)) {
-                    bookingClickListener?.onBookingClicked()
-                } else if (shouldDrawEnd && endRegion.contains(x, y)) {
-                    bookingClickListener?.onBookingClicked()
-                } else {
-                    bookingClickListener?.onEmptyBookingClicked()
+    private val gestureDetectorCompat: GestureDetectorCompat = GestureDetectorCompat(context,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onDown(e: MotionEvent): Boolean {
+                    return if (shouldFill) {
+                        bookingClickListener?.onBookingClicked()
+                        true
+                    } else {
+                        val x = e.x.toInt()
+                        val y = e.y.toInt()
+                        if (shouldDrawStart && startRegion.contains(x, y)) {
+                            bookingClickListener?.onBookingClicked()
+                        } else if (shouldDrawEnd && endRegion.contains(x, y)) {
+                            bookingClickListener?.onBookingClicked()
+                        } else {
+                            bookingClickListener?.onEmptyBookingClicked()
+                        }
+                        true
+                    }
                 }
-                true
-            }
-        }
-    })
+            })
     private var shouldDrawEnd = false
     private var shouldDrawStart = false
     private var shouldFill = false
@@ -71,6 +69,31 @@ class BookingInfo : View {
     private val endRegion: Region = Region()
     private val startBounds: RectF = RectF()
     private val startRegion: Region = Region()
+
+    constructor(c: Context) : super(c) {
+        init(c)
+    }
+
+    constructor(c: Context, attributeSet: AttributeSet) : super(c, attributeSet) {
+        init(c, attributeSet)
+    }
+
+    private fun init(c: Context, attributeSet: AttributeSet? = null) {
+
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        initStartTriangle()
+        initEndTriangle()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        shouldDrawEnd = false
+        shouldDrawStart = false
+        shouldFill = false
+    }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -102,56 +125,12 @@ class BookingInfo : View {
         }
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        shouldDrawEnd = false
-        shouldDrawStart = false
-        shouldFill = false
-    }
-
-    constructor(c: Context) : super(c) {
-        init(c)
-    }
-
-    constructor(c: Context, attributeSet: AttributeSet) : super(c, attributeSet) {
-        init(c, attributeSet)
-    }
-
-    private fun init(c: Context, attributeSet: AttributeSet? = null) {
-
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        initStartTriangle()
-        initEndTriangle()
-    }
-
-    private fun initEndTriangle() {
-        endTriangle.moveTo(width * 0.9f, height * 0.1f)
-        endTriangle.lineTo(0f, height * 0.1f)
-        endTriangle.lineTo(0f, height * 0.90f)
-        endTriangle.lineTo(width * 0.9f, height * 0.1f)
-        endTriangle.computeBounds(endBounds, true)
-        endRegion.setPath(endTriangle, Region(endBounds.left.toInt(), endBounds.top.toInt(), endBounds.right.toInt(), endBounds.bottom.toInt()))
-    }
-
-    private fun initStartTriangle() {
-        startTriangle.moveTo(width.toFloat(), height * 0.1f)
-        startTriangle.lineTo(width.toFloat(), height * 0.9f)
-        startTriangle.lineTo(width * 0.1f, height * 0.9f)
-        startTriangle.lineTo(width.toFloat(), height * 0.1f)
-        startTriangle.computeBounds(startBounds, true)
-        startRegion.setPath(startTriangle, Region(startBounds.left.toInt(), startBounds.top.toInt(), startBounds.right.toInt(), startBounds.bottom.toInt()))
-    }
-
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return gestureDetectorCompat.onTouchEvent(event)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), cellPaint)
         drawChip(canvas)
     }
 
@@ -163,8 +142,29 @@ class BookingInfo : View {
             canvas.drawPath(endTriangle, paint)
         }
         if (shouldFill) {
-            canvas.drawRect(0f, height * 0.1f, width.toFloat(), height * 0.9f, paint)
+            canvas.drawRect(0f, height * offsetStart,
+                    width.toFloat(), height * offsetEnd, paint)
         }
+    }
+
+    private fun initEndTriangle() {
+        endTriangle.moveTo(width * offsetEnd, height * offsetStart)
+        endTriangle.lineTo(0f, height * offsetStart)
+        endTriangle.lineTo(0f, height * offsetEnd)
+        endTriangle.lineTo(width * offsetEnd, height * offsetStart)
+        endTriangle.computeBounds(endBounds, true)
+        endRegion.setPath(endTriangle, Region(endBounds.left.toInt(), endBounds.top.toInt(),
+                endBounds.right.toInt(), endBounds.bottom.toInt()))
+    }
+
+    private fun initStartTriangle() {
+        startTriangle.moveTo(width.toFloat(), height * offsetStart)
+        startTriangle.lineTo(width.toFloat(), height * offsetEnd)
+        startTriangle.lineTo(width * offsetStart, height * offsetEnd)
+        startTriangle.lineTo(width.toFloat(), height * offsetStart)
+        startTriangle.computeBounds(startBounds, true)
+        startRegion.setPath(startTriangle, Region(startBounds.left.toInt(), startBounds.top.toInt(),
+                startBounds.right.toInt(), startBounds.bottom.toInt()))
     }
 
     interface OnBookingClickListener {
