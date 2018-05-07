@@ -29,7 +29,7 @@ class BookingInfo : View {
     private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
         it.color = Color.GREEN
         it.style = Paint.Style.FILL
-        it.shader = shaderGroupOnline
+        it.shader = shaderGroupOffline
     }
 
     private val calendar = Calendar.getInstance()
@@ -53,7 +53,10 @@ class BookingInfo : View {
                         } else if (shouldDrawEnd && endRegion.contains(x, y)) {
                             bookingClickListener?.onBookingClicked()
                         } else {
-                            bookingClickListener?.onEmptyBookingClicked()
+                            if (!(shouldDrawStart && shouldDrawEnd)) { // in case cell has start
+                                // and end booking do not react on clicking the empty space between them
+                                bookingClickListener?.onEmptyBookingClicked()
+                            }
                         }
                         true
                     }
@@ -87,7 +90,6 @@ class BookingInfo : View {
         initStartTriangle()
         initEndTriangle()
     }
-
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         shouldDrawEnd = false

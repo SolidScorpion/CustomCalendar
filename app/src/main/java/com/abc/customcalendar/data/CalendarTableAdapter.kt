@@ -20,7 +20,8 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 /**
  * Created by Anton P. on 27.04.2018.
  */
-class CalendarTableAdapter(c: Context, val bookingListener: BookingInfo.OnBookingClickListener) : AbstractTableAdapter<CalendarDay, Room, RoomCell>(c) {
+class CalendarTableAdapter(c: Context, private val bookingListener: BookingInfo.OnBookingClickListener,
+                           private val timeListener: View.OnClickListener) : AbstractTableAdapter<CalendarDay, Room, RoomCell>(c) {
     private var inflater = LayoutInflater.from(c)
     private fun inflate(layoutRes: Int, parent: ViewGroup? = null): View {
         return inflater.inflate(layoutRes, parent, false)
@@ -38,7 +39,7 @@ class CalendarTableAdapter(c: Context, val bookingListener: BookingInfo.OnBookin
         return CellViewHolder(inflate(R.layout.item_room_cell, parent), bookingListener)
     }
 
-    override fun onCreateCornerView(): View = inflate(R.layout.item_corner)
+    override fun onCreateCornerView(): View = inflate(R.layout.item_corner).also { it.setOnClickListener(timeListener) }
 
     override fun onBindCellViewHolder(holder: AbstractViewHolder, cellItemModel: Any, columnPosition: Int, rowPosition: Int) {
         val cellViewHolder = holder as? CellViewHolder
