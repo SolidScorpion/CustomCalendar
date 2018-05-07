@@ -11,11 +11,11 @@ import com.abc.customcalendar.R
 import com.abc.customcalendar.pojo.CalendarDay
 import com.abc.customcalendar.pojo.Room
 import com.abc.customcalendar.pojo.RoomCell
+import com.abc.customcalendar.tableview.adapter.AbstractTableAdapter
+import com.abc.customcalendar.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import com.abc.customcalendar.viewholder.CalendarDayViewHolder
 import com.abc.customcalendar.viewholder.CellViewHolder
 import com.abc.customcalendar.viewholder.RoomHeaderViewHolder
-import com.evrencoskun.tableview.adapter.AbstractTableAdapter
-import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 
 /**
  * Created by Anton P. on 27.04.2018.

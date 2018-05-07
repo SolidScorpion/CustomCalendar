@@ -3,7 +3,9 @@ package com.abc.customcalendar
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.DatePicker
 import android.widget.Toast
@@ -12,7 +14,9 @@ import com.abc.customcalendar.pojo.BookOrder
 import com.abc.customcalendar.pojo.CalendarDay
 import com.abc.customcalendar.pojo.Room
 import com.abc.customcalendar.pojo.RoomCell
-import com.evrencoskun.tableview.TableView
+import com.abc.customcalendar.tableview.TableView
+import com.abc.customcalendar.tableview.listener.ITableViewListener
+import com.abc.customcalendar.viewholder.CellViewHolder
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -70,6 +74,27 @@ class MainActivity : AppCompatActivity(), BookingInfo.OnBookingClickListener, Da
             calendarInstance.time = startTime
             datePickerDialog.show()
         })
+        tableView.tableViewListener = object : ITableViewListener {
+            override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+            }
+
+            override fun onColumnHeaderLongPressed(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
+            }
+
+            override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+            }
+
+            override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
+            }
+
+            override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int, e: MotionEvent) {
+                (cellView as CellViewHolder).bookingInfo.onTouchEvent(e)
+            }
+
+            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+            }
+        }
         val (bookOrder, secondBookOrder) = initStubBooking()
         val arrayList = ArrayList<Room>()
         val arrayList2 = ArrayList<List<RoomCell>>()

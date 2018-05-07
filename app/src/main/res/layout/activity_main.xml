@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.evrencoskun.tableview.TableView
+    <com.abc.customcalendar.tableview.TableView
         android:id="@+id/contentContainer"
         app:row_header_width="@dimen/header_width"
         app:column_header_height="@dimen/column_header_height"

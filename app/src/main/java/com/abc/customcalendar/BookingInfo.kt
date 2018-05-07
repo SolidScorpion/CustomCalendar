@@ -41,7 +41,7 @@ class BookingInfo : View {
         }
     private val gestureDetectorCompat: GestureDetectorCompat = GestureDetectorCompat(context,
             object : GestureDetector.SimpleOnGestureListener() {
-                override fun onDown(e: MotionEvent): Boolean {
+                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                     return if (shouldFill) {
                         bookingClickListener?.onBookingClicked()
                         true

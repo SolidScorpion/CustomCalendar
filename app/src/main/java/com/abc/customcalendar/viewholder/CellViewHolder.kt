@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.FrameLayout
 import com.abc.customcalendar.BookingInfo
 import com.abc.customcalendar.R
-import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
+import com.abc.customcalendar.tableview.adapter.recyclerview.holder.AbstractViewHolder
 
 /**
  * Created by Anton P. on 27.04.2018.

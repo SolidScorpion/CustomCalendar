@@ -10,4 +10,7 @@
     <dimen name="room_category_size">10sp</dimen>
     <dimen name="small_text_size">12sp</dimen>
     <dimen name="day_size">24sp</dimen>
+
+    <dimen name="default_row_header_width">55dp</dimen>
+    <dimen name="default_column_header_height">55dp</dimen>
 </resources>
